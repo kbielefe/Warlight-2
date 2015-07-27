@@ -9,7 +9,7 @@ object Warlight {
     fields(0) match {
       case "setup_map"            => GameState(state.map.setup(fields), state.settings)
       case "settings"             => GameState(state.map, state.settings.setup(fields))
-      case "update_map"           => state
+      case "update_map"           => GameState(state.map.update(fields), state.settings)
       case "opponent_moves"       => state
       case "pick_starting_region" => state
       case "go"                   => state

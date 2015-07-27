@@ -2,7 +2,8 @@ case class GameMap(superRegions: Map[Int, Int] = Map.empty[Int, Int],
                    regions:      Map[Int, Int] = Map.empty[Int, Int],
                    neighbors:    Map[Int, Set[Int]] = Map.empty[Int, Set[Int]],
                    wastelands:       Array[Int] = Array.empty[Int],
-                   opponentRegions:  Array[Int] = Array.empty[Int]) {
+                   opponentRegions:  Array[Int] = Array.empty[Int],
+                   occupiers: Map[Int, (String, Int)] = Map.empty[Int, (String, Int)]) {
 
   def setup(fields: Array[String]): GameMap = {
     val args = fields drop 2
@@ -16,16 +17,21 @@ case class GameMap(superRegions: Map[Int, Int] = Map.empty[Int, Int],
     }
   }
 
+  def update(fields: Array[String]): GameMap = {
+    val newOccupiers = fields drop 1 grouped 3 map {case Array(id, owner, armyCount) => (id.toInt, (owner, armyCount.toInt))}
+    GameMap(superRegions, regions, neighbors, wastelands, opponentRegions, newOccupiers.toMap)
+  }
+
   private def addSuperRegions(fields: Array[String]): GameMap = {
     val ints = fields map {_.toInt}
     val newSuperRegions = ints grouped 2 map {case Array(id, reward) => (id, reward)}
-    GameMap(newSuperRegions.toMap, regions, neighbors, wastelands, opponentRegions)
+    GameMap(newSuperRegions.toMap, regions, neighbors, wastelands, opponentRegions, occupiers)
   }
 
   private def addRegions(fields: Array[String]): GameMap = {
     val ints = fields map {_.toInt}
     val newRegions = ints grouped 2 map {case Array(region, superRegion) => (region, superRegion)}
-    GameMap(superRegions, newRegions.toMap, neighbors, wastelands, opponentRegions)
+    GameMap(superRegions, newRegions.toMap, neighbors, wastelands, opponentRegions, occupiers)
   }
 
   private def addNeighbors(fields: Array[String]): GameMap = {
@@ -37,16 +43,16 @@ case class GameMap(superRegions: Map[Int, Int] = Map.empty[Int, Int],
     val oneWay = (fields grouped 2).toList map {case Array(region, neighbors) => (region.toInt, (neighbors split "," map {_.toInt}).toSet)}
     val reverses = oneWay flatMap {case (region, neighbors) => neighbors map {(_, region)}}
     val newNeighbors = reverses.foldLeft(oneWay.toMap)(addReverse)
-    GameMap(superRegions, regions, newNeighbors, wastelands, opponentRegions)
+    GameMap(superRegions, regions, newNeighbors, wastelands, opponentRegions, occupiers)
   }
 
   private def addWastelands(fields: Array[String]): GameMap = {
     val newWastelands = fields map {_.toInt}
-    GameMap(superRegions, regions, neighbors, newWastelands, opponentRegions)
+    GameMap(superRegions, regions, neighbors, newWastelands, opponentRegions, occupiers)
   }
 
   private def addOpponentStartingRegions(fields: Array[String]): GameMap = {
     val newOpponentRegions = fields map {_.toInt}
-    GameMap(superRegions, regions, neighbors, wastelands, newOpponentRegions)
+    GameMap(superRegions, regions, neighbors, wastelands, newOpponentRegions, occupiers)
   }
 }

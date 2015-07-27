@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm warlight.zip
+zip warlight.zip *.scala

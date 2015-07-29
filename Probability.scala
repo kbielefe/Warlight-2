@@ -10,13 +10,26 @@ object Probability {
     (math.round(min).toInt, math.round(mean).toInt, math.round(max).toInt)
   }
 
-  def attackersLost(defenders: Int): (Int, Int, Int) = {
-    commonLost(defenders, attackerLostProbability)
+  def attackersLost(defenders: Int): (Int, Int, Int) = commonLost(defenders, attackerLostProbability)
+
+  def defendersLost(attackers: Int): (Int, Int, Int) = commonLost(attackers, defenderLostProbability)
+
+  private def exactLoss(loss: Int, opponents: Int, lostProbability: Double): Double = {
+    val (min, mean, max) = commonLost(opponents, lostProbability)
+
+    if (loss < min || loss > max)
+      return 0
+
+    val minDouble = opponents * lostProbability * (1.0 - luckFactor)
+    val luckMin = math.max(0, math.ceil((loss - 0.5 - minDouble) / luckFactor).toInt)
+    val luckMax = math.min(opponents, math.floor((loss + 0.5 - minDouble) / luckFactor).toInt)
+    val p = BigDecimal(lostProbability)
+    ((luckMin to luckMax) map {k => (binomial(opponents, k) * p.pow(k) * (1 - p).pow(opponents - k)).toDouble}).sum
   }
 
-  def defendersLost(attackers: Int): (Int, Int, Int) = {
-    commonLost(attackers, defenderLostProbability)
-  }
+  def exactDefendersLost(loss: Int, attackers: Int): Double = exactLoss(loss, attackers, defenderLostProbability)
+
+  def exactAttackersLost(loss: Int, defenders: Int): Double = exactLoss(loss, defenders, attackerLostProbability)
 
   def binomial(n: Int, k: Int): BigDecimal = {
     if (n == k || k == 0)
@@ -35,8 +48,8 @@ object Probability {
     if (k > max)
       return 0
 
-    val minDouble = destroyers.toDouble * lostProbability * (1.0 - luckFactor)
-    val luckMin = math.ceil((k.toDouble - 0.5 - minDouble) / luckFactor).toInt
+    val minDouble = destroyers * lostProbability * (1.0 - luckFactor)
+    val luckMin = math.ceil((k - 0.5 - minDouble) / luckFactor).toInt
     val p = BigDecimal(lostProbability)
     ((luckMin to destroyers) map {k => (binomial(destroyers, k) * p.pow(k) * (1 - p).pow(destroyers - k)).toDouble}).sum
   }

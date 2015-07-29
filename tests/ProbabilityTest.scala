@@ -75,4 +75,12 @@ class ProbabilityTest extends FlatSpec with Matchers {
   it should "be 10 for 6 defenders and 50% success" in {
     Probability.attackersNeeded(6, 0.5) shouldBe 10
   }
+
+  it should "be 3 for 2 defenders and 100% success" in {
+    Probability.attackersNeeded(2, 1.0) shouldBe 3
+  }
+
+  it should "be 2 for 1 defender and 100% success" in {
+    Probability.attackersNeeded(1, 1.0) shouldBe 2
+  }
 }

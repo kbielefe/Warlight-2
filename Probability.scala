@@ -47,7 +47,7 @@ object Probability {
   }
 
   def attackersNeeded(defenders: Int, successProbability: Double): Int = {
-    0
+    (Iterator.from(1) find {attackers => attackSucceeds(attackers, defenders) >= successProbability}).get
   }
 
   def simulate(attackers: Int, defenders: Int): Double = {

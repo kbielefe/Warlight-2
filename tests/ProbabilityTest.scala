@@ -67,4 +67,12 @@ class ProbabilityTest extends FlatSpec with Matchers {
     val simulation = ((1 to 1000) map {x => Probability.simulate(10, 6)}).sum / 1000
     math.abs(Probability.attackSucceeds(10, 6) - simulation) should be < 0.015
   }
+
+  "Attackers needed" should "be 11 for 6 defenders and 100% success" in {
+    Probability.attackersNeeded(6, 1.0) shouldBe 11
+  }
+
+  it should "be 10 for 6 defenders and 50% success" in {
+    Probability.attackersNeeded(6, 0.5) shouldBe 10
+  }
 }

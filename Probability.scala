@@ -63,6 +63,15 @@ object Probability {
     (Iterator.from(1) find {attackers => attackSucceeds(attackers, defenders) >= successProbability}).get
   }
 
+  def multiFrontAttack(attackers: List[Int], defenders: Int): Double = {
+    val head :: tail = attackers
+    val firstAttackSucceeds = attackSucceeds(head, defenders)
+    if (tail.isEmpty)
+      firstAttackSucceeds
+    else
+      firstAttackSucceeds + (1.0 - firstAttackSucceeds) * multiFrontAttack(tail, defenders)
+  }
+
   def simulate(attackers: Int, defenders: Int): Double = {
     val luckDefendersDestroyed = (1 to attackers) count {x => util.Random.nextDouble() < defenderLostProbability}
     val luckAttackersDestroyed = (1 to defenders) count {x => util.Random.nextDouble() < attackerLostProbability}

@@ -26,4 +26,8 @@ object Probability {
   def attackSucceeds(attackers: Int, defenders: Int): Double = {
     0.0
   }
+
+  def attackersNeeded(defenders: Int, successProbability: Double): Int = {
+    0
+  }
 }

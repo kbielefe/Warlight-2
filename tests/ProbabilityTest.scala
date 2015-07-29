@@ -42,4 +42,8 @@ class ProbabilityTest extends FlatSpec with Matchers {
     mean shouldBe 60
     max  shouldBe 66
   }
+
+  "Binomial" should "be 161700 for n 100, k 3" in {
+    Probability.binomial(100, 3) shouldBe 161700
+  }
 }

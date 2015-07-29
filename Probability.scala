@@ -17,4 +17,13 @@ object Probability {
   def defendersLost(attackers: Int): (Int, Int, Int) = {
     commonLost(attackers, defenderLostProbability)
   }
+
+  def binomial(n: Int, k: Int): BigDecimal = {
+    val bigN = BigDecimal(n)
+    ((1 to k) map {i => (bigN + 1 - i) / i}).product
+  }
+
+  def attackSucceeds(attackers: Int, defenders: Int): Double = {
+    0.0
+  }
 }
